@@ -20,6 +20,12 @@ public class CalcEx extends JFrame {
 	private String prev_operation = "";
 	private ArrayList<String> equation = new ArrayList<String>();
 	
+	
+	private LayoutManager Rectangle(int i, int j, int k, int l) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	public CalcEx() {
 		setLayout(null);
 		
@@ -79,25 +85,96 @@ public class CalcEx extends JFrame {
 					&& !prev_operation.equals("-") && !prev_operation.equals("*")
 					&& !prev_operation.equals("/")) {
 					inputSpace.setText(inputSpace.getText()+e.getActionCommand());
-			}
+			
 	}else {
 			inputSpace.setText(inputSpace.getText()+ e.getActionCommand());
 	}
 	prev_operation = e.getActionCommand();
 	}
+
+
 	
 	private void fullTextParsing(String inputText) {
 		equation.clear();
 		
 			for(int i=0; i < inputText.length();i++) {
 				char ch = inputText.charAt(i);
+				
+				if(ch == '-' || ch == '+' || ch == '*' || ch == '/') {
+					equation.add(num);
+					num = "";
+					equation.add(ch + "");
+			} else {
+				num = num + ch;
+	}
 			}
+			equation.add(num);
+			equation.remove("");
 	}
-	private LayoutManager Rectangle(int i, int j, int k, int l) {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public double calcEx(String inputText) {
+		fullTextParsing(inputText);
+		
+		double prev = 0;
+		double current = 0;
+		String mode = "";
+		
+		for(int i=0; i<equation.size();i++) {
+			String s = equation.get(i);
+			
+			if(s.equals("+")) {
+				mode = "add";
+			}else if (s.equals("-")) {
+				mode = "sub";
+			}else if (s.equals("*")) {
+				mode = "mul";
+			}else if (s.equals("/")) {
+				mode = "div";
+			}else {
+								
+				if((mode.equals("mul") || mode.equals("div")) && !s.equals("+")
+				&& !s.equals("-") && !s.equals("*") && !s.equals("/")) {
+					Double one = Double.parseDouble(equation.get(i-2));
+					Double two = Double.parseDouble(equation.get(i));
+					Double result = 0.0;
+					
+					if(mode.equals("mul")) {
+						result = one*two;
+					}else if (mode.equals("div")) {
+						result = one/two;
+					}
+					equation.add(i+1,Double.toString(result));
+					
+					for(int j =0; j<3; j++) {
+						equation.remove(i-2);
+					}
+					i -= 2;
+				}
+					
+				
+			}
+		}
+		
+		for(String s : equation) {
+			if(s.equals("+")) {
+				mode = "add";
+			}else if (s.equals("-")) {
+				mode ="sub";
+			}else {
+				current = Double.parseDouble(s);
+				if(mode.equals("add")){
+					prev += current;
+				}else {
+					prev -= current;
+				}
+						
+			}
+			prev = Math.round(prev*100000)/100000.0;
+		}
+		return prev;
 	}
-
+	
+	
 	public static void main(String[] args) {
 		new CalcEx();
 		
